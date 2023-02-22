@@ -12,7 +12,7 @@ def index():
 
 @app.route( "/yes", methods=['POST'] )
 def yes_event():
-    df = pd.read_csv("data_collected.csv")
+    df = pd.read_csv("data_collected_blue.csv")
     df_append = pd.DataFrame( {"click":1, "visit":1, "group":"treatment"} , index=[0])
     df = pd.concat( [df, df_append], ignore_index=True )
     df.to_csv("data_collected.csv", index=False)
@@ -20,7 +20,7 @@ def yes_event():
 
 @app.route( "/no", methods=['POST'] )
 def no_event():
-    df = pd.read_csv("data_collected.csv")
+    df = pd.read_csv("data_collected_blue.csv")
     df_append = pd.DataFrame( {"click":0, "visit":1, "group":"treatment"} , index=[0])
     df = pd.concat( [df, df_append], ignore_index=True  )
     df.to_csv("data_collected.csv", index=False)
