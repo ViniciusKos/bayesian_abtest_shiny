@@ -8,6 +8,7 @@ from matplotlib.animation import FuncAnimation
 
 
 def bayesian_inference( data ):
+
     return p, expected_loss_a, expected_loss_b
     
 
