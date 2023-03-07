@@ -14,8 +14,8 @@ def get_prob_and_loss( data , sample_size = None):
     for day in range( len ( data ) ):
         u_a , var_a = stats.beta.stats( a = 1 + data.loc[day, 'acc_clicks_A'], \
                                     b = 1 + (data.loc[day, 'acc_visits_A'] - data.loc[day, 'acc_clicks_A']), moments='mv')
-        u_b , var_b = stats.beta.stats( a = 1 + data.loc[day, 'clicks_B'], \
-                                    b = 1 + (data.loc[day, 'visits_B'] - data.loc[day, 'clicks_B']), moments='mv')
+        u_b , var_b = stats.beta.stats( a = 1 + data.loc[day, 'acc_clicks_B'], \
+                                    b = 1 + (data.loc[day, 'acc_visits_B'] - data.loc[day, 'acc_clicks_B']), moments='mv')
 
 
         # Normal distribution Sample A and B
@@ -29,8 +29,8 @@ def get_prob_and_loss( data , sample_size = None):
                             b = 1 + ( data.loc[day, 'acc_visits_A'] - data.loc[day, 'acc_clicks_A']))
 
         fb = stats.beta.pdf ( x_b,
-                            a = 1 + data.loc[day, 'clicks_B'],
-                            b = 1 + ( data.loc[day, 'visits_B'] - data.loc[day, 'clicks_B'] ))
+                            a = 1 + data.loc[day, 'acc_clicks_B'],
+                            b = 1 + ( data.loc[day, 'acc_visits_B'] - data.loc[day, 'acc_clicks_B'] ))
         
 
         # Beta distribution function of page A and B
@@ -52,4 +52,4 @@ def get_prob_and_loss( data , sample_size = None):
         expected_loss_a.append( expected_loss_A )
         expected_loss_b.append( expected_loss_B )
 
-    return proba_b_better_a, expected_loss_A, expected_loss_B
+    return proba_b_better_a, expected_loss_a, expected_loss_b
