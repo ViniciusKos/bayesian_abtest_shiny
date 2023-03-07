@@ -33,13 +33,16 @@ def animate( i ):
     proba_b_better_a, expected_loss_A, expected_loss_B = get_prob_and_loss(df1, sample_size=1000)
 
     x1 = np.arange( len(proba_b_better_a) )
-    plt.plot( x1, proba_b_better_a, label=f"Probability B better A")
-    plt.plot( x1, expected_loss_A, label='Risk Choosing B')
-    plt.plot( x1, expected_loss_B, label='Risk Choosing A')
+ 
+    plt.clf()
+    plt.plot( x1, proba_b_better_a, label=f"Probability B better A", color='green')
+    plt.plot( x1, expected_loss_A, label='Risk Choosing A', color='blue')
+    plt.plot( x1, expected_loss_B, label='Risk Choosing B', color='red')
     plt.legend( loc='upper left' )
     plt.tight_layout()
 
 ani = FuncAnimation( plt.gcf(), animate, interval=1000 )
 
+plt.clf()
 plt.tight_layout()
 plt.show()
