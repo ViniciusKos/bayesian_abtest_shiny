@@ -11,6 +11,7 @@ def get_prob_and_loss( data , sample_size = None):
     expected_loss_b = []
 
 
+
     for day in range( len ( data ) ):
         u_a , var_a = stats.beta.stats( a = 1 + data.loc[day, 'acc_clicks_A'], \
                                     b = 1 + (data.loc[day, 'acc_visits_A'] - data.loc[day, 'acc_clicks_A']), moments='mv')
