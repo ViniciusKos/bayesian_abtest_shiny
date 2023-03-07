@@ -23,7 +23,7 @@ def no_event():
     df = pd.read_csv("data_collected_red.csv")
     df_append = pd.DataFrame( {"click":0, "visit":1, "group":"control"} , index=[0])
     df = pd.concat( [df, df_append], ignore_index=True  )
-    df.to_csv("data_collected.csv", index=False)
+    df.to_csv("data_collected_red.csv", index=False)
     return redirect( url_for( "index" ))
 
 
