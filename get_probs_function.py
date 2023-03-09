@@ -38,20 +38,20 @@ def get_prob_and_loss( data , sample_size = None):
 
 
         
-        # Beta / Normal
-        y = ( vals['fa'] * vals['fb'] ) / ( vals['ga'] * vals['gb'] )
-        yb = y[ vals['x_b'] >= vals['x_a'] ]
-        
-        #Calculate probabilities
-        p = ( 1/ sample_size ) * np.sum(yb)
+            # Beta / Normal
+            y = ( vals['fa'] * vals['fb'] ) / ( vals['ga'] * vals['gb'] )
+            yb = y[ vals['x_b'] >= vals['x_a'] ]
+            
+            #Calculate probabilities
+            p = ( 1/ sample_size ) * np.sum(yb)
 
 
-        expected_loss_A = (1 / sample_size ) * np.sum ( ( ( vals['x_b'] - vals['x_a'] )*y) [vals['x_b'] >= vals['x_a']] )
-        expected_loss_B = (1 / sample_size ) * np.sum ( ( ( vals['x_a'] - vals['x_b'] )*y) [vals['x_a'] >= vals['x_b']] )
+            expected_loss_A = (1 / sample_size ) * np.sum ( ( ( vals['x_b'] - vals['x_a'] )*y) [vals['x_b'] >= vals['x_a']] )
+            expected_loss_B = (1 / sample_size ) * np.sum ( ( ( vals['x_a'] - vals['x_b'] )*y) [vals['x_a'] >= vals['x_b']] )
 
-        prob_b_better_a.append(p)
-        expected_loss_a.append( expected_loss_A )
-        expected_loss_b.append( expected_loss_B )
+            prob_b_better_a.append(p)
+            expected_loss_a.append( expected_loss_A )
+            expected_loss_b.append( expected_loss_B )
 
 
     return prob_b_better_a, expected_loss_a, expected_loss_b
