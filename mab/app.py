@@ -9,11 +9,10 @@ app = Flask( __name__ )
 def index():
     # get data
 
-    df = pd.concat( [ pd.read_csv(f"data_collected_{i}.csv") for i in ["red","blue"] ] )
+    df = pd.read_csv(f"data_experiment.csv")
     df['no_click'] = df['visit'] - df['click']
 
     click_array = df.groupby( "group" ).sum().reset_index()[['click', 'no_click']].T.to_numpy()
-
 
     print( click_array )
     # Thompson Agent
@@ -28,7 +27,7 @@ def index():
 
 @app.route( "/yes", methods=['POST'] )
 def yes_event():
-    df0 = pd.concat( [ pd.read_csv(f"data_collected_{i}.csv") for i in ["red","blue"] ] )
+    df0 = pd.read_csv("data_experiment.csv" )
     if request.form['yescheckbox'] =='blue':
         new_row = {"click":1, "visit":1, "group":"treatment"}
         df0 = df0.append( new_row, ignore_index=True )
@@ -43,7 +42,7 @@ def yes_event():
 
 @app.route( "/no", methods=['POST'] )
 def no_event():
-    df0 = pd.concat( [ pd.read_csv(f"data_collected_{i}.csv") for i in ["red","blue"] ] )
+    df0 = pd.read_csv(f"data_experiment.csv")
     if request.form['nocheckbox'] =='blue':
         new_row = {"click":0, "visit":1, "group":"treatment"}
         df0 = df0.append( new_row, ignore_index=True )
