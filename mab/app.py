@@ -29,13 +29,10 @@ def index():
 @app.route( "/yes", methods=['POST'] )
 def yes_event():
     df0 = pd.read_csv("data_experiment.csv" )
-    print( request.form['nocheckbox'] )
-    if request.form['yescheckbox'] =='blue':
-        print("Blue")
+    if request.form['yescheckbox_blue'] =='on':
         new_row = {"click":1, "visit":1, "group":"treatment"}
         df0 = df0.append( new_row, ignore_index=True )
     else:
-        print("Red")
         new_row = {"click":1, "visit":1, "group":"control"}
         df0 = df0.append( new_row, ignore_index=True )
 
@@ -47,14 +44,10 @@ def yes_event():
 @app.route( "/no", methods=['POST'] )
 def no_event():
     df0 = pd.read_csv(f"data_experiment.csv")
-    print( request.form['nocheckbox'] )
-    if request.form['nocheckbox'] =='blue':
-        print("Blue")
-        request.form['nocheckbox'] =='blue'
+    if request.form['nocheckbox_blue '] =='on':
         new_row = {"click":0, "visit":1, "group":"treatment"}
         df0 = df0.append( new_row, ignore_index=True )
     else:
-        print("Red")
         new_row = {"click":0, "visit":1, "group":"control"}
         df0 = df0.append( new_row, ignore_index=True )
 
