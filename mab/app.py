@@ -12,26 +12,30 @@ def index():
     df = pd.read_csv(f"data_experiment.csv")
     df['no_click'] = df['visit'] - df['click']
 
-    click_array = df.groupby( "group" ).sum().reset_index()[['click', 'no_click']].T.to_numpy()
+    alpha = df.groupby( "group" )[['click', 'no_click']].sum()
 
-    print( click_array )
+
+    print( alpha )
     # Thompson Agent
-    prob_reward = np.random.beta( click_array[0], click_array[1] )
+    prob_reward = np.random.beta( alpha['click'], alpha['no_click'] )
 
     if np.argmax( prob_reward ) == 0:
-        return render_template( "page_blue.html" )
-    else:
         return render_template( "page_red.html" )
+    else:
+        return render_template( "page_blue.html" )
 
 
 
 @app.route( "/yes", methods=['POST'] )
 def yes_event():
     df0 = pd.read_csv("data_experiment.csv" )
+    print( request.form['nocheckbox'] )
     if request.form['yescheckbox'] =='blue':
+        print("Blue")
         new_row = {"click":1, "visit":1, "group":"treatment"}
         df0 = df0.append( new_row, ignore_index=True )
     else:
+        print("Red")
         new_row = {"click":1, "visit":1, "group":"control"}
         df0 = df0.append( new_row, ignore_index=True )
 
@@ -43,10 +47,14 @@ def yes_event():
 @app.route( "/no", methods=['POST'] )
 def no_event():
     df0 = pd.read_csv(f"data_experiment.csv")
+    print( request.form['nocheckbox'] )
     if request.form['nocheckbox'] =='blue':
+        print("Blue")
+        request.form['nocheckbox'] =='blue'
         new_row = {"click":0, "visit":1, "group":"treatment"}
         df0 = df0.append( new_row, ignore_index=True )
     else:
+        print("Red")
         new_row = {"click":0, "visit":1, "group":"control"}
         df0 = df0.append( new_row, ignore_index=True )
 
