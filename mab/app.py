@@ -15,12 +15,9 @@ def index():
 
     df['no_click'] = df['visit'] - df['click']
     alpha = df.groupby( "group" )[['click', 'no_click']].sum()
-
-    print( alpha )
-
+    
     # Thompson Agent - Draw random beta sample from pages conversion
     prob_reward = np.random.beta( alpha['click'], alpha['no_click'] )
-
 
     # check which page has the highest conversion and return it
     if np.argmax( prob_reward ) == 0:
@@ -31,6 +28,7 @@ def index():
 
 @app.route( "/yes", methods=['POST'] )
 def yes_event():
+
     global prob_reward, df
 
     # check which page has the highest conversion and create new row
@@ -39,16 +37,16 @@ def yes_event():
     else:
         new_row = {"click":1, "visit":1, "group":"treatment"} 
 
+    #append and save data
     df = df.append( new_row, ignore_index=True )
     df.to_csv( "data_experiment.csv", index=False)
     return redirect( url_for( "index" ))
 
 
-
 @app.route( "/no", methods=['POST'] )
 def no_event():
-    global prob_reward, df
 
+    global prob_reward, df
 
     # check which page has the highest conversion and create new row
     if np.argmax( prob_reward ) == 0:
@@ -56,10 +54,10 @@ def no_event():
     else:
         new_row = {"click":0, "visit":1, "group":"treatment"}
 
+    #append and save data
     df = df.append( new_row, ignore_index=True )
     df.to_csv( "data_experiment.csv", index=False)
     return redirect( url_for( "index" ))
-
 
 
 if __name__ == '__main__':
