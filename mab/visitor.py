@@ -13,7 +13,6 @@ driver.get("http://127.0.0.1:5000/home")
 clicks = 10000
 for click in range( clicks ):
     button_color = driver.find_element( "name" , "yescheckbox" ).get_attribute( "values" )
-    print(button_color)
     if button_color == "blue":
         if np.random.random() < 0.20:
             driver.find_element( 'name', 'yescheckbox').click()

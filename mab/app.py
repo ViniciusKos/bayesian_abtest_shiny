@@ -12,6 +12,7 @@ df = pd.read_csv(f"data_experiment.csv")
 def index():
 
     global prob_reward, df
+    df = pd.read_csv(f"data_experiment.csv")
 
     df['no_click'] = df['visit'] - df['click']
     alpha = df.groupby( "group" )[['click', 'no_click']].sum()
