@@ -30,7 +30,7 @@ def animate( i ):
     })
 
 
-    proba_b_better_a, expected_loss_A, expected_loss_B = get_prob_and_loss(df1, sample_size=10)
+    proba_b_better_a, expected_loss_A, expected_loss_B = get_prob_and_loss(df1, sample_size=1000)
 
     x1 = np.arange( len(proba_b_better_a) )
  

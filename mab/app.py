@@ -15,7 +15,8 @@ def index():
 
     df['no_click'] = df['visit'] - df['click']
     alpha = df.groupby( "group" )[['click', 'no_click']].sum()
-    
+    print( alpha )
+
     # Thompson Agent - Draw random beta sample from pages conversion
     prob_reward = np.random.beta( alpha['click'], alpha['no_click'] )
 
