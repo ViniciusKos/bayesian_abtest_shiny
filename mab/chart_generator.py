@@ -35,6 +35,8 @@ def animate( i ):
     x1 = np.arange( len(proba_b_better_a) )
  
     plt.cla()
+    ax = plt.gca()
+    ax.set_ylim([0, 1])
     plt.plot( x1, proba_b_better_a, label=f"Probability B better A", color='green')
     plt.plot( x1, expected_loss_A, label='Risk Choosing A', color='blue')
     plt.plot( x1, expected_loss_B, label='Risk Choosing B', color='red')
