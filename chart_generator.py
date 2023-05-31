@@ -7,7 +7,7 @@ from get_probs_function import get_prob_and_loss
 
 def animate( i ):
 
-    df = pd.concat( [ pd.read_csv(f"data_collected_{i}.csv") for i in ["red","blue"] ] )
+    df = pd.read_csv("data_experiment.csv")
     df1 = df.copy()
     for i in ['visit','click']:
         df1[i] = df1[i].astype(int)
@@ -34,15 +34,16 @@ def animate( i ):
 
     x1 = np.arange( len(proba_b_better_a) )
  
-    plt.clf()
-    plt.plot( x1, proba_b_better_a, label=f"Probability B better A", color='green')
-    plt.plot( x1, expected_loss_A, label='Risk Choosing A', color='blue')
-    plt.plot( x1, expected_loss_B, label='Risk Choosing B', color='red')
+    plt.cla()
+    ax = plt.gca()
+    ax.set_ylim([0, 1])
+    plt.plot( x1, proba_b_better_a, label=f"Probability Test better Control", color='green')
+    plt.plot( x1, expected_loss_A, label='Expected Loss Control', color='gray')
+    plt.plot( x1, expected_loss_B, label='Expected Loss Test', color='blue')
     plt.legend( loc='upper left' )
     plt.tight_layout()
 
-ani = FuncAnimation( plt.gcf(), animate, interval=1000 )
+ani = FuncAnimation( plt.gcf(), animate, interval=100 )
 
-plt.clf()
 plt.tight_layout()
 plt.show()
