@@ -18,102 +18,27 @@ library(tidyverse)
 
 ```{r}
 data = read_csv("data_experiment.csv")
+
 head(data)
 
-
 ```
 
 ```{r}
-get_prob_and_loss <- function(data, sample_size = NULL) {
-  
-  vals <- list()
-  prob_b_better_a <- c()
-  expected_loss_a <- c()
-  expected_loss_b <- c()
-  
-  for (day in 1:nrow(data)) {
-    
-    for (v in c("a", "b")) {
-      
-      # Generate Beta distribution params
-      alpha <- 1 + data[day, paste0("acc_clicks_", toupper(v))]
-            beta <- 1 + (data[day, paste0("acc_visits_", toupper(v))] - data[day, paste0("acc_clicks_", toupper(v))])
-            
-            vals[[paste0("u_", v)]] <- alpha / (alpha + beta)
-            vals[[paste0("var_", v)]] <- (alpha * beta) / ((alpha + beta)^2 * (alpha + beta + 1))
-      
-      # Generate Normal distribution
-      vals[[paste0("x_", v)]] <- rnorm(n = sample_size, mean = vals[[paste0("u_", v)]], sd = 1.25 * sqrt(vals[[paste0("var_", v)]]))
-      
-      # Generate Beta PDF
-      vals[[paste0("f", v)]] <- dbeta(x = vals[[paste0("x_", v)]],
-                                      shape1 = 1 + data[day, paste0("acc_clicks_", toupper(v))],
-                                      shape2 = 1 + (data[day, paste0("acc_visits_", toupper(v))] - data[day, paste0("acc_clicks_", toupper(v))]))
-      
-      # Generate Normal PDF
-      vals[[paste0("g", v)]] <- dnorm(x = vals[[paste0("x_", v)]],
-                                      mean = vals[[paste0("u_", v)]],
-                                      sd = 1.25 * sqrt(vals[[paste0("var_", v)]]))
-    }
-    
-    # Beta / Normal
-    y <- (vals[['fa']] * vals[['fb']]) / (vals[['ga']] * vals[['gb']])
-    yb <- y[vals[['x_b']] >= vals[['x_a']]]
-    
-    # Calculate probabilities
-    p <- (1 / sample_size) * sum(yb)
-    
-    expected_loss_A <- (1 / sample_size) * sum(((vals[["x_b"]] - vals[["x_a"]]) * y)[vals[["x_b"]] >= vals[["x_a"]]])
-    expected_loss_B <- (1 / sample_size) * sum(((vals[["x_a"]] - vals[["x_b"]]) * y)[vals[["x_a"]] >= vals[["x_b"]]])
-    
-    prob_b_better_a <- c(prob_b_better_a, p)
-    expected_loss_a <- c(expected_loss_a, expected_loss_A)
-    expected_loss_b <- c(expected_loss_b, expected_loss_B)
-  }
-  
-  return(list(prob_b_better_a, expected_loss_a, expected_loss_b))
-}
-```
 
-
-```{r}
-str(row.names(df1))
-```
-```{r}
-select_if(df1, is.numeric) %>%  colnames
-```
-```{r}
-select_if(df1, is.numeric) %>% colnames %>% droplevels()
-```
-
-
-```{r}
-str(df1)
-```
-
-
-```{r}
-df1[,!names(df1) %in% c("click", "visit")] %>% colnames
-```
-```{r}
-select_if(df1, is.numeric) %>% colnames 
-```
-
-
-
-```{r}
 df1 <- data
-for (i in c('visit', 'click')) {
+for (i in c('visits', 'clicks')) {
   df1[[i]] <- as.integer(df1[[i]])
 }
 
 df1$day <- row.names(df1) %>% as.integer()
+
 df1 <- pivot_wider(df1, 
                    id_cols = day, 
                    names_from = group, 
                    names_glue = "{group}_{.value}",
-                   values_from = c( "click", "visit", "no_click" ) , 
+                   values_from = c( "clicks", "visits", "no_clicks" ) , 
                    values_fn = sum )
+
 df1[is.na(df1)] <- 0
 
 for (i in colnames(df1)) {
@@ -124,15 +49,76 @@ df1 <- df1[,!names(df1) %in% c("acc_day")]
 
 head(df1)
 
+
 ```
 
 ```{r}
-pivot_wider
+df1[2, paste0("acc_", "control", "_clicks")]
 ```
 
 
+
 ```{r}
-str(df1)
+library(stats)
+
+get_prob_and_loss <- function(data, sample_size = NULL) {
+  prob_test_better_control <- vector()
+  expected_loss_control <- vector()
+  expected_loss_test <- vector()
+
+  for (day in seq_len(nrow(data))) {
+    vals <- list()
+
+    for (v in c("control", "test")) {
+      vals[[paste0("u_", v)]] <- stats::rbeta(1, 1 + data[day, paste0("acc_", v, "_clicks")], 
+                                              1 + (data[day, paste0("acc_", v,"_visits")] - data[day, paste0("acc_", v, "_clicks")]))
+      vals[[paste0("var_", v)]] <- (1.25 * sqrt(vals[[paste0("u_", v)]] * (1 - vals[[paste0("u_", v)]])))
+      vals[[paste0("x_", v)]] <- rnorm(sample_size, mean = vals[[paste0("u_", v)]], sd = vals[[paste0("var_", v)]])
+      vals[[paste0("f", v)]] <- dbeta(vals[[paste0("x_", v)]], 1 + data[day, paste0("acc_", v, "_clicks")], 
+                                      1 + (data[day, paste0("acc_", v,"_visits")] - data[day, paste0("acc_", v, "_clicks")]))
+      vals[[paste0("g", v)]] <- dnorm(vals[[paste0("x_", v)]], mean = vals[[paste0("u_", v)]], sd = vals[[paste0("var_", v)]])
+    }
+
+    y <- (vals[["fcontrol"]] * vals[["ftest"]]) / (vals[["gcontrol"]] * vals[["gtest"]])
+    yb <- y[vals[["x_test"]] >= vals[["x_control"]]]
+
+    p <- sum(yb) / sample_size
+
+    expected_loss_control_day <- sum((vals[["x_test"]] - vals[["x_control"]]) * y[vals[["x_test"]] >= vals[["x_control"]]]) / sample_size
+    expected_loss_test_day <- sum((vals[["x_control"]] - vals[["x_test"]]) * y[vals[["x_control"]] >= vals[["x_test"]]]) / sample_size
+
+    prob_test_better_control <- c(prob_test_better_control, p)
+    expected_loss_control <- c(expected_loss_control, expected_loss_control_day)
+    expected_loss_test <- c(expected_loss_test, expected_loss_test_day)
+  }
+
+  return(list(prob_test_better_control, expected_loss_control, expected_loss_test))
+}
+
+proba_better_control <- get_prob_and_loss(df1, sample_size=1000)
+```
+
+
+
+
+
+
+```{r}
+
+
+plot(df1$day, proba_b_better_a, type = "l", ylim = c(0, 1),
+     xlab = "x1", ylab = "Probability",
+     col = "green", main = "Probability and Expected Loss",
+     sub = "Comparison between Test and Control")
+
+lines(df1$day, expected_loss_A, col = "gray")
+lines(df1$day, expected_loss_B, col = "blue")
+
+legend("topright", legend = c("Probability Test better Control",
+                              "Expected Loss Control",
+                              "Expected Loss Test"),
+       col = c("green", "gray", "blue"),
+       lty = 1)
 ```
 
 
