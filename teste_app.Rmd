@@ -69,9 +69,6 @@ qbeta(1, 1 + df1[[2, paste0("acc_", "control", "_clicks")]],
 
 ```
 
-```{r}
-df1[[2, paste0("acc_", "control", "_clicks")]]
-```
 
 
 
@@ -88,8 +85,8 @@ get_prob_and_loss <- function(data, sample_size = NULL) {
     vals <- list()
 
     for (v in c("control", "test")) {
-      vals[[paste0("u_", v)]] <- stats::rbeta(1, 1 + data[day, paste0("acc_", v, "_clicks")], 
-                                              1 + (data[day, paste0("acc_", v,"_visits")] - data[day, paste0("acc_", v, "_clicks")]))
+      vals[[paste0("u_", v)]] <- stats::qbeta(1, 1 + data[[day, paste0("acc_", v, "_clicks")]], 
+                                              1 + (data[[day, paste0("acc_", v,"_visits")]] - data[[day, paste0("acc_", v, "_clicks")]]))
       vals[[paste0("var_", v)]] <- (1.25 * sqrt(vals[[paste0("u_", v)]] * (1 - vals[[paste0("u_", v)]])))
       vals[[paste0("x_", v)]] <- rnorm(sample_size, mean = vals[[paste0("u_", v)]], sd = vals[[paste0("var_", v)]])
       vals[[paste0("f", v)]] <- dbeta(vals[[paste0("x_", v)]], 1 + data[day, paste0("acc_", v, "_clicks")], 
