@@ -55,6 +55,24 @@ head(df1)
 ```{r}
 df1[2, paste0("acc_", "control", "_clicks")]
 ```
+```{r}
+df1[2, c(paste0("acc_", "control", "_clicks"))]
+```
+
+
+
+```{r}
+
+qbeta(1, 1 + df1[[2, paste0("acc_", "control", "_clicks")]], 
+                                              1 + (df1[[2, paste0("acc_", "control","_visits")]] - df1[[2, paste0("acc_", "control", "_clicks")]]))
+
+
+```
+
+```{r}
+df1[[2, paste0("acc_", "control", "_clicks")]]
+```
+
 
 
 
