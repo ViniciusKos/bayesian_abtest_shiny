@@ -9,7 +9,7 @@ def animate( i ):
 
     df = pd.read_csv("data_experiment.csv")
     df1 = df.copy()
-    for i in ['visit','click']:
+    for i in ['visits','clicks']:
         df1[i] = df1[i].astype(int)
     df1 = df1.reset_index().rename( columns={'index':'day'} )
     df1 = df1.pivot_table( index='day', columns='group', values=df1.select_dtypes(exclude='object').columns ,aggfunc='sum')
@@ -18,17 +18,40 @@ def animate( i ):
     df1.columns = ["_".join(i) for i in df1.columns]
     for i in df1.columns:
         df1[f"acc_{i}"] = df1[i].cumsum()
-    df1 = df1.rename(columns={
-        'control_click':"clicks_A",
-        'treatment_click':"clicks_B",
-        "control_visit":"visits_A",
-        "treatment_visit":"visits_B",
-        "acc_control_click":"acc_clicks_A",
-        "acc_treatment_click":"acc_clicks_B",
-        "acc_control_visit":"acc_visits_A",
-        "acc_treatment_visit":"acc_visits_B"
-    })
+    # df1 = df1.rename(columns={
+    #     'control_click':"clicks_A",
+    #     'treatment_click':"clicks_B",
+    #     "control_visit":"visits_A",
+    #     "treatment_visit":"visits_B",
+    #     "acc_control_click":"acc_clicks_A",
+    #     "acc_treatment_click":"acc_clicks_B",
+    #     "acc_control_visit":"acc_visits_A",
+    #     "acc_treatment_visit":"acc_visits_B"
+    # })
 
+
+    df = pd.read_csv("data_experiment.csv")
+    df1 = df.copy()
+    df1['group'] = df1['group'].replace( {"treatment":"test"})
+    for i in ['visits','clicks']:
+        df1[i] = df1[i].astype(int)
+    df1 = df1.reset_index().rename( columns={'index':'day'} )
+    df1 = df1.pivot_table( index='day', columns='group', values=df1.select_dtypes(exclude='object').columns ,aggfunc='sum')
+    df1 = df1.swaplevel( axis=1 )
+    df1 = df1.reindex(sorted(df1.columns), axis=1).fillna(0)
+    df1.columns = ["_".join(i) for i in df1.columns]
+    for i in df1.columns:
+        df1[f"acc_{i}"] = df1[i].cumsum()
+    # df1 = df1.rename(columns={
+    #     'control_click':"clicks_A",
+    #     'treatment_click':"clicks_B",
+    #     "control_visit":"visits_A",
+    #     "treatment_visit":"visits_B",
+    #     "acc_control_click":"acc_clicks_A",
+    #     "acc_treatment_click":"acc_clicks_B",
+    #     "acc_control_visit":"acc_visits_A",
+    #     "acc_treatment_visit":"acc_visits_B"
+    # })
 
     proba_b_better_a, expected_loss_A, expected_loss_B = get_prob_and_loss(df1, sample_size=1000)
 
