@@ -22,5 +22,5 @@ proba_b_better_a, expected_loss_A, expected_loss_B = get_prob_and_loss(df1, samp
 
 x1 = np.arange( len(proba_b_better_a) )
 
-df2 = pd.concat([pd.Series(x1),proba_b_better_a,expected_loss_A,expected_loss_B],axis=1)
+df2 = pd.DataFrame( list(zip(x1, proba_b_better_a, expected_loss_A, expected_loss_B)), columns = ["x1", "proba_b_better_a", "expected_loss_A", "expected_loss_B"])
 df2.to_csv("data_experiment_probas.csv", index=False)

@@ -11,84 +11,10 @@ library(tidyverse)
 library(reticulate)
 ```
 
-
-
-```{python}
-!pip install pandas
-!pip install matplotlib
-!pip install scipy
-```
-
-
-
 ```{r}
-sessionInfo()
-```
-```{r}
-renv::init()
-```
-
-
-
-```{python}
-import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-from matplotlib.animation import FuncAnimation
-from get_probs_function import get_prob_and_loss
-
-!python chart_preprocessing.py
-
-```
-
-
-
-
-
-```{r}
-
-df1 <- data
-for (i in c('visits', 'clicks')) {
-  df1[[i]] <- as.integer(df1[[i]])
-}
-
-df1$day <- row.names(df1) %>% as.integer()
-
-df1 <- pivot_wider(df1, 
-                   id_cols = day, 
-                   names_from = group, 
-                   names_glue = "{group}_{.value}",
-                   values_from = c( "clicks", "visits", "no_clicks" ) , 
-                   values_fn = sum )
-
-df1[is.na(df1)] <- 0
-
-for (i in colnames(df1)) {
-  df1[[paste0("acc_", i)]] <- cumsum(df1[[i]])
-}
-
-#df1 <- df1[,!names(df1) %in% c("acc_day")]
-
+df1 = read_csv("data_experiment_probas.csv")
 head(df1)
-
-
 ```
-
-
-
-
-```{python}
-from get_probs_function import get_prob_and_loss
-
-get_prob_and_loss
-
-print("hello")
-```
-
-
-
-
-
 
 
 
@@ -98,13 +24,13 @@ print("hello")
 ```{r}
 
 
-plot(df1$day, proba_b_better_a, type = "l", ylim = c(0, 1),
+plot(df1$x1, df1$proba_b_better_a, type = "l", ylim = c(0, 1),
      xlab = "x1", ylab = "Probability",
      col = "green", main = "Probability and Expected Loss",
      sub = "Comparison between Test and Control")
 
-lines(df1$day, expected_loss_A, col = "gray")
-lines(df1$day, expected_loss_B, col = "blue")
+lines(df1$x1, df1$expected_loss_A, col = "gray")
+lines(df1$x1, df1$expected_loss_B, col = "blue")
 
 legend("topright", legend = c("Probability Test better Control",
                               "Expected Loss Control",
@@ -114,37 +40,6 @@ legend("topright", legend = c("Probability Test better Control",
 ```
 
 
-
-
-
-```{r}
-df1 <- data
-for (i in c('visit', 'click')) {
-  df1[[i]] <- as.integer(df1[[i]])
-}
-df1 <- df1 %>% 
-  mutate(day = row_number()) %>% 
-  pivot_wider(names_from = 'group', values_from = names(select_if(., is.numeric)), values_fn = sum) %>% 
-  rename_all(~paste0("day_", .)) %>% 
-  select(sort(names(.))) %>% 
-  mutate_all(~replace_na(., 0)) %>% 
-  rename_all(~sub("_", "", .)) %>% 
-  mutate(across(everything(), cumsum)) %>% 
-  rename(
-    clicks_A = control_click,
-    clicks_B = treatment_click,
-    visits_A = control_visit,
-    visits_B = treatment_visit,
-    acc_clicks_A = acc_control_click,
-    acc_clicks_B = acc_treatment_click,
-    acc_visits_A = acc_control_visit,
-    acc_visits_B = acc_treatment_visit
-  )
-```
-
-```{r}
-head(df1)
-```
 
 
 
