@@ -24,6 +24,9 @@ library(reticulate)
 ```{r}
 sessionInfo()
 ```
+```{r}
+renv::init()
+```
 
 
 
@@ -34,7 +37,7 @@ from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 from get_probs_function import get_prob_and_loss
 
-!python chart_generator.py
+!python chart_preprocessing.py
 
 ```
 
