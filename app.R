@@ -12,8 +12,13 @@ library(shiny)
 library(ggplot2)
 library(readr)
 library(magrittr)
+library(reticulate)
 
-df <- read_csv(r"(P:\Python\GitHub\bayesian_abtest\data_experiment_probas.csv)")
+setwd(r"(P:\Python\GitHub\bayesian_abtest)")
+
+py_run_file("chart_preprocessing.py")
+
+df <- read_csv(r"(data_experiment_probas.csv)")
 
 
 # Define the UI

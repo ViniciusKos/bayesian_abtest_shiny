@@ -47,8 +47,6 @@ def get_prob_and_loss( data , sample_size = None):
         prob_test_better_control.append(p)
         expected_loss_control.append( loss_control )
         expected_loss_test.append( loss_test )
-        #expected_loss_control.append( expected_loss_control )
-        #expected_loss_test.append( expected_loss_test )
 
 
     return prob_test_better_control, expected_loss_control, expected_loss_test
