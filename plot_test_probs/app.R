@@ -26,8 +26,9 @@ ui <- fluidPage(
   titlePanel("A/B Test Analysis"),
   fluidRow(
     column(width = 4, align = "center",
-           actionButton("updateBtn", "Update CSV"),
-           actionButton("probBtn", "Get Probabilities")
+           fileInput("uploadBtn", "Upload CSV", accept = ".csv",buttonLabel = "Browse csv File"
+),
+
     ),
     column(width = 8, align = "center",
            plotOutput("linePlot")
@@ -44,22 +45,12 @@ server <- function(input, output) {
     print("CSV file updated!")
   }
   
-  # Function to get probabilities from the CSV file
-  get_probabilities <- function() {
-    # Your code to read the CSV file and calculate probabilities goes here
-    # ...
-    # ...
-    print("Probabilities calculated!")
-  }
-  
   # Button event observers
   observeEvent(input$updateBtn, {
     update_csv()
   })
   
-  observeEvent(input$probBtn, {
-    get_probabilities()
-  })
+
   
   # Line plot
   output$linePlot <- renderPlot({
@@ -73,6 +64,7 @@ server <- function(input, output) {
       labs(x = "Group", y = "Performance", fill = "Group") +
       theme_minimal()
   })
-}
 
+}
+  
 shinyApp(ui, server)

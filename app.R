@@ -10,59 +10,29 @@
 
 library(shiny)
 library(ggplot2)
+library(readr)
+library(magrittr)
 
-library(shiny)
-library(ggplot2)
+df <- read_csv(r"(P:\Python\GitHub\bayesian_abtest\data_experiment_probas.csv)")
+
 
 # Define the UI
 ui <- fluidPage(
-  titlePanel("A/B Test Comparison"),
-  
-  sidebarLayout(
-    sidebarPanel(
-      # Input for the number of conversions and total visitors for Group A
-      numericInput("conversionsA", "Conversions - Group A:", value = 100),
-      numericInput("visitorsA", "Total Visitors - Group A:", value = 1000),
-      
-      # Input for the number of conversions and total visitors for Group B
-      numericInput("conversionsB", "Conversions - Group B:", value = 120),
-      numericInput("visitorsB", "Total Visitors - Group B:", value = 1000)
-    ),
-    
-    mainPanel(
-      plotOutput("comparisonPlot")
-    )
+  titlePanel("Bayesian Test"),
+  plotOutput("comparisonPlot")
   )
-)
+
 
 # Define the server logic
-server <- function(input, output) {
-  # Calculate the conversion rates for Group A and Group B
-  conversion_rate_A <- reactive({
-    input$conversionsA / input$visitorsA
-  })
+server <- function(input, output, session) {
+  selected <- reactive(df)
   
-  conversion_rate_B <- reactive({
-    input$conversionsB / input$visitorsB
-  })
-  
-  # Create a line plot to compare the conversions over time
   output$comparisonPlot <- renderPlot({
-    time <- 1:10  # Example time points
-    
-    data <- data.frame(Time = time,
-                       Group_A_Conversions = conversion_rate_A() * time,
-                       Group_B_Conversions = conversion_rate_B() * time)
-    
-    data_long <- tidyr::pivot_longer(data, -Time, names_to = "Group", values_to = "Conversions")
-    
-    ggplot(data_long, aes(x = Time, y = Conversions, color = Group)) +
-      geom_line() +
-      labs(x = "Time", y = "Conversions", color = "Group") +
-      scale_color_manual(values = c("blue", "red")) +
-      theme_minimal() + ylim(0,1)
-  })
+    selected() %>%
+      ggplot( aes(x1, proba_b_better_a)) + geom_line(colour="blue") + labs( y="Prob Test Better Control")}
+    ,res=96)
 }
+
 
 # Run the app
 shinyApp(ui = ui, server = server)
