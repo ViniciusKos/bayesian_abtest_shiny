@@ -1,7 +1,5 @@
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
-from matplotlib.animation import FuncAnimation
 from scipy import stats
 
 def get_prob_and_loss( data , sample_size = None):
