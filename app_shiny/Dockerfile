@@ -12,8 +12,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libssl-dev \
     libssh2-1-dev \
     libssl1.1 \
-    python3-pip \
-    python3.8 \
     && rm -rf /var/lib/apt/lists/*
 
 # system library dependency for the app app
@@ -22,18 +20,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 
-RUN python3.8 -m pip install virtualenv
-
-
 # basic shiny functionality
-RUN R -q -e "install.packages(c('shiny', 'rmarkdown', 'ggplot2', 'reticulate', 'magrittr', 'readr'))"
+RUN R -q -e "install.packages(c('shiny', 'rmarkdown', 'ggplot2', 'magrittr', 'readr', 'bayesAB'))"
 
 
 # install dependencies of the app app
 RUN R -q -e "install.packages('Rmpfr')"
 
-
-RUN R -q -e "reticulate::virtualenv_create( envname='r-ret', packages=c('pandas','scipy'))"
 
 # copy the app to the image
 RUN mkdir /root/app
@@ -43,6 +36,5 @@ COPY Rprofile.site /usr/local/lib/R/etc/
 
 EXPOSE 3838
 
-CMD ["R", "-q", "-e", \
+#CMD ["R", "-q", "-e"]
 #"shiny::runApp('/root/app')"
-]

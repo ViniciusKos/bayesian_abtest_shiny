@@ -15,9 +15,20 @@
 
 # Sys.setenv(RETICULATE_PYTHON = r"(P:\Python\GitHub\bayesian_abtest\app_shiny\bayesian_env\Scripts\python.exe)")
 library(shiny)
-library(ggplot2)
+library(ggplot)
 library(readr)
 library(magrittr)
+library(reticulate)
+
+
+reticulate::py_config()
+setwd(r"(P:\Python\GitHub\bayesian_abtest\app_shiny\app)")
+reticulate::py_run_file("chart_preprocessing.py")
+reticulate::py_run_string("
+import os
+import sys
+print(sys.executable)
+print(sys.prefix)")
 
 df <- read_csv(r"(data_experiment_probas.csv)")
 
