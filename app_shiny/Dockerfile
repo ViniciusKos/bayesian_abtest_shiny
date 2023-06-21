@@ -1,40 +1,36 @@
-FROM openanalytics/r-ver:4.1.3
-
-LABEL maintainer="Tobias Verbeke <tobias.verbeke@openanalytics.eu>"
+# Base image https://hub.docker.com/u/rocker/
+FROM rocker/shiny:latest
 
 # system libraries of general use
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    pandoc \
-    pandoc-citeproc \
-    libcurl4-gnutls-dev \
+## install debian packages
+RUN apt-get update -qq && apt-get -y --no-install-recommends install \
+    libxml2-dev \
     libcairo2-dev \
-    libxt-dev \
-    libssl-dev \
+    libsqlite3-dev \
+    libmariadbd-dev \
+    libpq-dev \
     libssh2-1-dev \
-    libssl1.1 \
-    && rm -rf /var/lib/apt/lists/*
+    unixodbc-dev \
+    libcurl4-openssl-dev \
+    libssl-dev
 
-# system library dependency for the app app
-RUN apt-get update && apt-get install -y \
-    libmpfr-dev \
-    && rm -rf /var/lib/apt/lists/*
+## update system libraries
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get clean
 
+# copy necessary files
+## renv.lock file
+COPY /app/renv.lock ./renv.lock
+## app folder
+COPY /app ./app
 
-# basic shiny functionality
-RUN R -q -e "install.packages(c('shiny', 'rmarkdown', 'ggplot2', 'magrittr', 'readr', 'bayesAB'))"
+# install renv & restore packages
+RUN Rscript -e 'install.packages("renv")'
+RUN Rscript -e 'renv::restore()'
 
-
-# install dependencies of the app app
-RUN R -q -e "install.packages('Rmpfr')"
-
-
-# copy the app to the image
-RUN mkdir /root/app
-COPY app /root/app
-
-COPY Rprofile.site /usr/local/lib/R/etc/
-
+# expose port
 EXPOSE 3838
 
-#CMD ["R", "-q", "-e"]
-#"shiny::runApp('/root/app')"
+# run app on container start
+CMD ["R", "-e", "shiny::runApp('/app', host = '0.0.0.0', port = 3838)"]

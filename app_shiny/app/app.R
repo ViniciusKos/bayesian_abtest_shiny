@@ -8,16 +8,21 @@
 #
 
 # install.packages("renv")
-# 
+#
+
 # renv::snapshot()
 # renv::status()
-
+renv::activate()
+# renv::dependencies()
+# renv::isolate()
+# renv::dependencies()
 
 # Sys.setenv(RETICULATE_PYTHON = r"(P:\Python\GitHub\bayesian_abtest\app_shiny\bayesian_env\Scripts\python.exe)")
 library(shiny)
 library(ggplot2)
 library(readr)
 library(magrittr)
+
 
 df <- read_csv(r"(data_experiment_probas.csv)")
 
